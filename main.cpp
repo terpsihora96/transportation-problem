@@ -28,13 +28,7 @@ int main() {
         }
     }
 
-    std::cout << "Given cost matrix:" << std::endl;
-    for(i = 0 ; i < row ; ++i) {
-        for(j = 0 ; j < col ; ++j) {
-            std::cout << cost[i][j] << " ";
-        }
-        std::cout << std::endl;
-    }
+    print_matrix(cost, row, col);
 
     std::vector<unsigned> offer;        // {2, 6, 7};
     std::vector<unsigned> demand;       // {3, 3, 4, 5};
@@ -48,11 +42,14 @@ int main() {
         scanf("%u", &offer[i]);
     }
 
+    print_vector(offer, row);
+    print_vector(demand, col);
+
     if (std::accumulate(offer.cbegin(), offer.cend(), 0) == std::accumulate(demand.cbegin(), demand.cend(), 0)) {
         std::cout << "Problem is saturated." << std::endl;
     }
     
-    std::cout << NW_method(cost, row, col, offer, demand) << std::endl;
+    std::cout << "North-west method: " << NW_method(cost, row, col, offer, demand) << std::endl;
     
     return 0;
 }
