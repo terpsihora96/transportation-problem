@@ -51,6 +51,7 @@ int main() {
     
     std::cout << "North-west method: " << NW_method(cost, row, col, offer, demand) << std::endl;
     std::cout << "Minimum method: " << min_method(cost, row, col, offer, demand) << std::endl;
+    std::cout << "Fogel's method: " << fogels_method(cost, row, col, offer, demand) << std::endl;
     
     return 0;
 }
