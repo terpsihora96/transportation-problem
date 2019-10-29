@@ -171,13 +171,14 @@ unsigned fogels_method(  const std::vector<std::vector<unsigned>> &cost_given
         // Find minimum for another iteration
         rows_min.resize(0);
         cols_min.resize(0);
-        std::cout << "------------------------------" << std::endl;
+        /*std::cout << "------------------------------" << std::endl;
         for (i = 0; i < row; ++i) {
             for (j = 0; j < col; ++j) {
                 std::cout << cost[i][j] << " ";
             }
             std::cout << std::endl;
         }
+        */
         for (i = 0; i < row; ++i) {
             fst_row_min = INT_MAX;
             snd_row_min = INT_MAX;
@@ -286,6 +287,27 @@ unsigned fogels_method(  const std::vector<std::vector<unsigned>> &cost_given
             }
     }   
     return std::inner_product(selected_cost.cbegin(), selected_cost.cend(), final_demand.cbegin(), 0);
+}
+
+void scan_vector(std::vector<unsigned>& vector, const unsigned size)
+{
+    for(unsigned i = 0 ; i < size; ++i) {
+        scanf("%u", &vector[i]);
+    }
+}
+
+void scan_matrix( std::vector<std::vector<unsigned>> &cost
+                  , const unsigned row
+                  , const unsigned col)
+{
+    cost.resize(row);
+    for(unsigned i = 0; i < row; ++i) {
+        cost[i].resize(col);
+    }
+
+    for(unsigned i = 0 ; i < row ; ++i) {
+        scan_vector(cost[i], col);
+    }
 }
 
 void print_vector(const std::vector<unsigned>& vector, const unsigned size)

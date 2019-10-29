@@ -15,34 +15,18 @@ int main() {
     /*{   {20, 11, 15, 13},
         {17, 14,12, 13},
         {15, 12, 18, 18},
-    };*/
-    unsigned i, j;
-    cost.resize(row);
-    for(i = 0; i < row; ++i) {
-        cost[i].resize(col);
-    }
-
-    for(i = 0 ; i < row ; ++i) {
-        for(j = 0 ; j < col ; ++j) {
-            scanf("%u", &cost[i][j]);
-        }
-    }
-
+    };*/    
+    scan_matrix(cost, row, col);
     print_matrix(cost, row, col);
-
     std::vector<unsigned> offer;        // {2, 6, 7};
     std::vector<unsigned> demand;       // {3, 3, 4, 5};
     offer.resize(row);
     demand.resize(col);
-    
-    for(i = 0 ; i < col; ++i) {
-        scanf("%u", &demand[i]);
-    }
-    for(i = 0 ; i < row; ++i) {
-        scanf("%u", &offer[i]);
-    }
-
+    scan_vector(offer, row);
+    scan_vector(demand, col);
+    std::cout << "Offer: " << std::endl;
     print_vector(offer, row);
+    std::cout << "Demand: " << std::endl;
     print_vector(demand, col);
 
     if (std::accumulate(offer.cbegin(), offer.cend(), 0) == std::accumulate(demand.cbegin(), demand.cend(), 0)) {
