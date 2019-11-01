@@ -6,6 +6,45 @@
 #include <algorithm>
 #include <climits>
 
+void scan_vector(std::vector<unsigned>& vector, const unsigned size)
+{
+    vector.resize(size);
+    for(unsigned i = 0 ; i < size; ++i) {
+        std::cin >> vector[i];
+    }
+}
+
+void scan_matrix( std::vector<std::vector<unsigned>> &cost
+                  , const unsigned row
+                  , const unsigned col)
+{
+    cost.resize(row);
+    for(unsigned i = 0; i < row; ++i) {
+        cost[i].resize(col);
+    }
+    for(unsigned i = 0 ; i < row ; ++i) {
+        scan_vector(cost[i], col);
+    }
+}
+
+void print_vector(const std::vector<unsigned>& vector, const unsigned size)
+{
+    for(unsigned i = 0 ; i < size; ++i) {
+        std::cout << vector[i] << " ";
+    }
+    std::cout << std::endl;
+}
+
+void print_matrix( const std::vector<std::vector<unsigned>> &cost
+                   , const unsigned row
+                   , const unsigned col)
+{
+    std::cout << "Given cost matrix:" << std::endl;
+    for(unsigned i = 0 ; i < row ; ++i) {
+        print_vector(cost[i], col);
+    }
+}
+
 unsigned NW_method( const std::vector<std::vector<unsigned>> &cost
                     , const unsigned row
                     , const unsigned col
@@ -78,8 +117,7 @@ unsigned min_method( const std::vector<std::vector<unsigned>> &cost
     std::copy(offer_given.cbegin(), offer_given.cend(),  std::back_inserter(offer));
     std::vector<unsigned> selected_cost;
     std::vector<unsigned> final_demand;
-    unsigned i = 0;
-    unsigned j = 0;
+    unsigned i = 0, j = 0;
     
     auto cost_array = matrix2array(cost, row, col);
     // Thus, minimum element is always at the position 0
@@ -132,6 +170,11 @@ unsigned min_method( const std::vector<std::vector<unsigned>> &cost
     return std::inner_product(selected_cost.cbegin(), selected_cost.cend(), final_demand.cbegin(), 0);    
 }
 
+std::vector<std::vector<unsigned>> copy_matrix(const std::vector<std::vector<unsigned>> &cost_given)
+{
+    return cost_given;
+}
+
 unsigned fogels_method(  const std::vector<std::vector<unsigned>> &cost_given
                 , const unsigned row
                 , const unsigned col
@@ -145,19 +188,8 @@ unsigned fogels_method(  const std::vector<std::vector<unsigned>> &cost_given
     std::copy(offer_given.cbegin(), offer_given.cend(),  std::back_inserter(offer));
     std::vector<unsigned> selected_cost;
     std::vector<unsigned> final_demand;
-    unsigned i = 0, j = 0;
-    // Make local copy of cost matrix
     std::vector<std::vector<unsigned>> cost;
-    cost.resize(row);
-    for(i = 0; i < row; ++i) {
-        cost[i].resize(col);
-    }
-    for (i = 0; i < row; ++i) {
-        for (j = 0; j < col; ++j) {
-            cost[i][j] = cost_given[i][j];
-        }
-    }
-    // Necessary declarations for the 1st part of the algorithm
+    cost = copy_matrix(cost_given);
     std::vector<unsigned> rows_min;
     std::vector<unsigned> cols_min;
     unsigned fst_row_min;
@@ -165,20 +197,14 @@ unsigned fogels_method(  const std::vector<std::vector<unsigned>> &cost_given
     unsigned fst_col_min;
     unsigned snd_col_min;
     unsigned num_elems = row * col;
+    // In the function of number of visited matrix elements
     unsigned iter = 0;
-
+    unsigned i = 0, j = 0;
+    
     while (iter < num_elems) {
-        // Find minimum for another iteration
         rows_min.resize(0);
         cols_min.resize(0);
-        /*std::cout << "------------------------------" << std::endl;
-        for (i = 0; i < row; ++i) {
-            for (j = 0; j < col; ++j) {
-                std::cout << cost[i][j] << " ";
-            }
-            std::cout << std::endl;
-        }
-        */
+        // Find the difference from two smallest elements for each row
         for (i = 0; i < row; ++i) {
             fst_row_min = INT_MAX;
             snd_row_min = INT_MAX;
@@ -198,6 +224,7 @@ unsigned fogels_method(  const std::vector<std::vector<unsigned>> &cost_given
                 rows_min.push_back(abs(fst_row_min - snd_row_min));
             }
         }
+        // Find the difference from two smallest elements for each column
         for (j = 0; j < col; ++j) {
             fst_col_min = INT_MAX;
             snd_col_min = INT_MAX;
@@ -217,11 +244,12 @@ unsigned fogels_method(  const std::vector<std::vector<unsigned>> &cost_given
                 cols_min.push_back(abs(fst_col_min - snd_col_min));
             }
         }
-        
+
         auto max_min_rows = std::max_element(rows_min.cbegin(), rows_min.cend());
         auto max_min_cols = std::max_element(cols_min.cbegin(), cols_min.cend());
         
-        if (*max_min_rows >= *max_min_cols) { // Find minimum in i-th row
+        // Find minimum in i-th row
+        if (*max_min_rows >= *max_min_cols) {
             unsigned row_min = std::distance(rows_min.cbegin(), max_min_rows);
             fst_row_min = cost[row_min][0];
             j = 0;
@@ -233,7 +261,8 @@ unsigned fogels_method(  const std::vector<std::vector<unsigned>> &cost_given
             }
             i = row_min;
         }
-        else { // Find minimum in i-th column
+        // Find minimum in i-th column
+        else {
             unsigned col_min = std::distance(cols_min.cbegin(), max_min_cols);
             fst_col_min = cost[0][col_min];
             i = 0;
@@ -252,80 +281,38 @@ unsigned fogels_method(  const std::vector<std::vector<unsigned>> &cost_given
         unsigned k, l;
         
         if (offer[i] == demand[j]) {
-                final_demand.push_back(offer[i]);
-                for (k = 0; k < row; ++k) {
-                    for (l = 0; l < col; ++l) {
-                        if ((l == j or i == k) and cost[k][l] != INT_MAX) {
-                            cost[k][l] = INT_MAX;
-                            iter++;
-                        }
-                    }
-                }
-                
-            }
-            else if (offer[i] > demand[j]) {
-                final_demand.push_back(demand[j]);
-                offer[i] -= demand[j];
-                for (k = 0; k < row; ++k) {
-                    if (cost[k][j] != INT_MAX) {
-                        cost[k][j] = INT_MAX;
-                        iter++;
-                    }
-                }
-                
-            }
-            else if (offer[i] < demand[j]) {
-                final_demand.push_back(offer[i]);
-                demand[j] -= offer[i];
+            final_demand.push_back(offer[i]);
+            for (k = 0; k < row; ++k) {
                 for (l = 0; l < col; ++l) {
-                    if (cost[i][l] != INT_MAX) {
-                        cost[i][l] = INT_MAX;
+                    if ((l == j or i == k) and cost[k][l] != INT_MAX) {
+                        cost[k][l] = INT_MAX;
                         iter++;
-                    }                
+                    }
                 }
-                
+            }    
+        }
+        else if (offer[i] > demand[j]) {
+            final_demand.push_back(demand[j]);
+            offer[i] -= demand[j];
+            for (k = 0; k < row; ++k) {
+                if (cost[k][j] != INT_MAX) {
+                    cost[k][j] = INT_MAX;
+                    iter++;
+                }
             }
-    }   
+        }
+        else if (offer[i] < demand[j]) {
+            final_demand.push_back(offer[i]);
+            demand[j] -= offer[i];
+            for (l = 0; l < col; ++l) {
+                if (cost[i][l] != INT_MAX) {
+                    cost[i][l] = INT_MAX;
+                    iter++;
+                }                
+            }
+        }
+    }
     return std::inner_product(selected_cost.cbegin(), selected_cost.cend(), final_demand.cbegin(), 0);
-}
-
-void scan_vector(std::vector<unsigned>& vector, const unsigned size)
-{
-    for(unsigned i = 0 ; i < size; ++i) {
-        scanf("%u", &vector[i]);
-    }
-}
-
-void scan_matrix( std::vector<std::vector<unsigned>> &cost
-                  , const unsigned row
-                  , const unsigned col)
-{
-    cost.resize(row);
-    for(unsigned i = 0; i < row; ++i) {
-        cost[i].resize(col);
-    }
-
-    for(unsigned i = 0 ; i < row ; ++i) {
-        scan_vector(cost[i], col);
-    }
-}
-
-void print_vector(const std::vector<unsigned>& vector, const unsigned size)
-{
-    for(unsigned i = 0 ; i < size; ++i) {
-        std::cout << vector[i] << " ";
-    }
-    std::cout << std::endl;
-}
-
-void print_matrix( const std::vector<std::vector<unsigned>> &cost
-                   , const unsigned row
-                   , const unsigned col)
-{
-    std::cout << "Given cost matrix:" << std::endl;
-    for(unsigned i = 0 ; i < row ; ++i) {
-        print_vector(cost[i], col);
-    }
 }
 
 #endif

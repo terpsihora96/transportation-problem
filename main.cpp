@@ -5,23 +5,15 @@
 #include "main.hpp"
 
 int main() {
-    // Cost matrix
-    unsigned row; // = 3;
-    unsigned col; // = 4;
-    scanf("%u", &row);
-    scanf("%u", &col);
+    unsigned row;
+    unsigned col;
+    std::cin >> row >> col;
 
     std::vector< std::vector<unsigned>> cost;
-    /*{   {20, 11, 15, 13},
-        {17, 14,12, 13},
-        {15, 12, 18, 18},
-    };*/    
     scan_matrix(cost, row, col);
     print_matrix(cost, row, col);
-    std::vector<unsigned> offer;        // {2, 6, 7};
-    std::vector<unsigned> demand;       // {3, 3, 4, 5};
-    offer.resize(row);
-    demand.resize(col);
+    std::vector<unsigned> offer;       
+    std::vector<unsigned> demand;
     scan_vector(offer, row);
     scan_vector(demand, col);
     std::cout << "Offer: " << std::endl;
